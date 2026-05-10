@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"gnet/internal/config"
 	"gnet/internal/tools"
 	"log"
@@ -14,9 +13,15 @@ func main() {
 		log.Fatalf("Ошибка при загрузке .env файла")
 	}
 	envData := config.GetEnvData()
-	models, err := tools.SendGetWithContext(envData.APIUrl, envData.APIKey, client)
-	if err != nil {
-		log.Fatalf("Получен отрицательный ответ с кодом не 200")
+	data := make(map[string]any)
+	data["model"] = "gpt-3.5-turbo"
+	data["messages"] = []any{
+		map[string]any{
+			"role":    "user",
+			"content": "Привет!",
+		},
 	}
-	fmt.Print(models)
+	data["stream"] = false
+
+	tools.SendPostWithContext(envData.APIUrl, envData.APIKey, data, client)
 }
